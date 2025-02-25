@@ -1,20 +1,30 @@
 import express from 'express';
-import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import morgan from 'morgan';
 import authRoutes from './routes/authRoutes';
-import verifyRoutes from './routes/verifyRoutes';
+import adminRoutes from './routes/adminRoutes';
+import studentRoutes from './routes/studentRoutes';
 
 dotenv.config();
 
 const app = express();
-const port = 3002;
+const port = process.env.PORT || 3002;
 
-app.use(bodyParser.json());
+// Middleware
+app.use(morgan('dev'));
+app.use(express.json());
 
-// Rutas de autenticación
+// Rutas con prefijos
 app.use('/', authRoutes);
-app.use('/', verifyRoutes);
+app.use('/admin', adminRoutes);
+app.use('/student', studentRoutes);
+
+// Middleware de manejo de errores
+app.use((err:any, req:any, res:any, next:any) => {
+  console.error(err.stack);
+  res.status(500).json({ error: 'Algo salió mal en el servidor' });
+});
 
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
+  console.log(`Servidor corriendo en http://localhost:${port} 🚀`);
 });

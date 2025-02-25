@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
-import crypto from 'crypto';
 import dotenv from 'dotenv';
 import { createUser, findUserByEmail, deleteUserByEmail, saveVerificationCode } from '../models/userModel';
 

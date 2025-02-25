@@ -3,6 +3,7 @@ import { RowDataPacket, ResultSetHeader } from 'mysql2';
 
 // Definir interfaz para el usuario
 interface User {
+  role: string;
   id?: number;
   name: string;
   email: string;
@@ -10,7 +11,6 @@ interface User {
   verified?: boolean;
   verification_code?: string;
   verification_code_expiry?: Date;
-  verification_token?: string;  // Para el token de verificación
 }
 
 // **Crear un nuevo usuario**
@@ -117,35 +117,6 @@ export const deleteUserByEmail = (email: string): Promise<ResultSetHeader> => {
         return reject(new Error('Error al eliminar usuario.'));
       }
       resolve(result as ResultSetHeader);
-    });
-  });
-};
-
-// **Verificar usuario por token**
-export const verifyUserByToken = (token: string): Promise<ResultSetHeader> => {
-  return new Promise((resolve, reject) => {
-    const query = `UPDATE users SET verified = TRUE WHERE verification_token = ? AND verified = FALSE`;
-    db.query(query, [token], (err, result) => {
-      if (err) {
-        console.error('Error al verificar usuario:', err);
-        return reject(new Error('Error al verificar usuario.'));
-      }
-      resolve(result as ResultSetHeader);
-    });
-  });
-};
-// **Buscar usuario por token de verificación**
-export const findUserByToken = (token: string): Promise<User | null> => {
-  return new Promise((resolve, reject) => {
-    const query = `SELECT * FROM users WHERE verification_token = ? LIMIT 1`;
-    db.query(query, [token], (err, results) => {
-      if (err) {
-        console.error('Error al buscar usuario por token:', err);
-        return reject(new Error('Error al buscar usuario.'));
-      }
-
-      const rows = results as RowDataPacket[];
-      resolve(rows.length > 0 ? (rows[0] as User) : null);
     });
   });
 };

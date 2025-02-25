@@ -1,35 +1,9 @@
-// controllers/userController.ts
 import { Request, Response } from 'express';
 import { 
-  findUserByToken, 
   saveVerificationCode, 
   verifyUserByCode, 
   updateUserVerified 
 } from '../models/userModel';
-
-// Verificar el correo usando el token
-export const verifyEmail = async (req: Request, res: Response): Promise<void> => {
-  const { token } = req.body;
-
-  if (!token) {
-    res.status(400).json({ message: 'Token requerido' });
-    return;
-  }
-
-  try {
-    const user = await findUserByToken(token);
-    
-    if (!user) {
-      res.status(400).json({ message: 'Token inválido o expirado' });
-      return;
-    }
-    
-    await updateUserVerified(user.email);
-    res.status(200).json({ message: 'Correo confirmado correctamente' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error al verificar el correo', error: (error as Error).message });
-  }
-};
 
 // Generar un código de verificación
 const generateVerificationCode = (): string => {
