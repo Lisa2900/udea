@@ -13,11 +13,20 @@ interface User {
   verification_code_expiry?: Date;
 }
 
-// **Crear un nuevo usuario**
-export const createUser = (name: string, email: string, password: string): Promise<ResultSetHeader> => {
+
+export const createUser = (
+  matricula: string,
+  name: string,
+  telefono: string,
+  email: string,
+  password: string,
+  carrera: string,
+  role: string = 'estudiante'
+): Promise<ResultSetHeader> => {
   return new Promise((resolve, reject) => {
-    const query = `INSERT INTO users (name, email, password, verified) VALUES (?, ?, ?, ?)`;
-    db.query(query, [name, email, password, false], (err, result) => {
+    const query = `INSERT INTO users (matricula, name, telefono, email, password, carrera, role, verified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+    
+    db.query(query, [matricula, name, telefono, email, password, carrera, role, false], (err, result) => {
       if (err) {
         console.error('Error al crear usuario:', err);
         return reject(new Error('Error al registrar el usuario.'));
@@ -26,6 +35,7 @@ export const createUser = (name: string, email: string, password: string): Promi
     });
   });
 };
+
 
 // **Guardar código de verificación en la tabla users**
 export const saveVerificationCode = (email: string, code: string): Promise<ResultSetHeader> => {

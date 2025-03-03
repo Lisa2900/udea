@@ -15,28 +15,36 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const registerUser = async (req: Request, res: Response): Promise<void> => {
+export const registerUser = async (req: Request, res: Response): Promise<void> => { 
   try {
-    const { name, email, password }: { name: string; email: string; password: string } = req.body;
+    const { matricula, name, telefono, email, password, carrera } = req.body;
 
-    if (!name || !email || !password) {
+    // Validaciones básicas
+    if (!matricula || !name || !telefono || !email || !password || !carrera) {
       res.status(400).json({ message: 'Todos los campos son obligatorios' });
       return;
     }
 
+    if (!/^\d{10}$/.test(telefono)) {
+      res.status(400).json({ message: 'El número telefónico debe tener 10 dígitos' });
+      return;
+    }
+
+    // Verificar si el usuario ya existe
     const existingUser = await findUserByEmail(email);
     if (existingUser) {
       res.status(400).json({ message: 'El usuario ya existe' });
       return;
     }
 
+    // Hashear la contraseña
     const hashedPassword = await bcrypt.hash(password, 10);
     
     // Generar un código de verificación de 6 dígitos
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     // Guardar el usuario en la base de datos
-    await createUser(name, email, hashedPassword);
+    await createUser(matricula, name, telefono, email, hashedPassword, carrera);
     
     // Guardar el código en la base de datos asociado al usuario
     await saveVerificationCode(email, verificationCode);

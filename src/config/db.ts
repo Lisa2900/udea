@@ -5,7 +5,7 @@ const db = mysql.createConnection({
   host: 'localhost', // Asegúrate de que el servidor de MySQL esté corriendo en localhost
   user: 'root', // Tu usuario de MySQL (puede ser diferente)
   password: '', // Si tienes contraseña para 'root', ponla aquí
-  database: 'udea', // Reemplaza esto con el nombre de tu base de datos
+  database: 'udea_database', // Reemplaza esto con el nombre de tu base de datos
 });
 
 // Establecer la conexión y manejar errores

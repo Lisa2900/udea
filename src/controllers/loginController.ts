@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { findUserByEmail } from '../models/userModel';
 
 export const loginUser = async (req: Request, res: Response): Promise<void> => {
@@ -41,9 +42,9 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
 
     // Definir rutas según el rol del usuario
     const roleRoutes: Record<string, string> = {
+      superadmin: '/superadmin/dashboard',
       admin: '/admin/dashboard',
-      student: '/student/profile',
-      teacher: '/teacher/portal' // Puedes agregar más roles aquí
+      estudiante: '/estudiante/perfil'
     };
 
     const redirectUrl = roleRoutes[user.role];
@@ -53,9 +54,17 @@ export const loginUser = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
+    // **Generar Token JWT**
+    const token = jwt.sign(
+      { id: user.id, role: user.role, email: user.email },
+      'clave_secreta', // Cambia esto por una variable de entorno
+      { expiresIn: '2h' } // El token expira en 2 horas
+    );
+
     // Enviar respuesta con datos de sesión
     res.status(200).json({
       message: 'Inicio de sesión exitoso',
+      token,
       role: user.role,
       redirectUrl
     });
